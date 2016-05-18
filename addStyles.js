@@ -192,9 +192,10 @@ var replaceText = (function () {
 })();
 
 function bind(fn, obj) {
-    var args = [].slice.call(arguments, 2);
+	var slice = [].slice;
+    var args = slice.call(arguments, 2);
 	return function() {
-		return fn.apply(obj, args.concat([].slice.call(arguments));
+		return fn.apply(obj, args.concat(slice.call(arguments)));
 	};
 }
 
