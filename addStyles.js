@@ -146,8 +146,8 @@ function addStyle(obj, options) {
 	if (options.singleton) {
 		var styleIndex = singletonCounter++;
 		styleElement = singletonElement || (singletonElement = createStyleElement(options));
-		update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-		remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+		update = bind(applyToSingletonTag, null, styleElement, styleIndex, false);
+		remove = bind(applyToSingletonTag, null, styleElement, styleIndex, true);
 	} else if(obj.sourceMap &&
 		typeof URL === "function" &&
 		typeof URL.createObjectURL === "function" &&
@@ -155,7 +155,7 @@ function addStyle(obj, options) {
 		typeof Blob === "function" &&
 		typeof btoa === "function") {
 		styleElement = createLinkElement(options);
-		update = updateLink.bind(null, styleElement);
+		update = bind(updateLink, null, styleElement);
 		remove = function() {
 			removeStyleElement(styleElement);
 			if(styleElement.href)
@@ -163,7 +163,7 @@ function addStyle(obj, options) {
 		};
 	} else {
 		styleElement = createStyleElement(options);
-		update = applyToTag.bind(null, styleElement);
+		update = bind(applyToTag, null, styleElement);
 		remove = function() {
 			removeStyleElement(styleElement);
 		};
@@ -190,6 +190,13 @@ var replaceText = (function () {
 		return textStore.filter(Boolean).join('\n');
 	};
 })();
+
+function bind(fn, obj) {
+    var args = [].slice.call(arguments, 2);
+	return function() {
+		return fn.apply(obj, args.concat(arguments));
+	};
+}
 
 function applyToSingletonTag(styleElement, index, remove, obj) {
 	var css = remove ? "" : obj.css;
